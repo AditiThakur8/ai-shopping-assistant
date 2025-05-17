@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Assistant</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px; /* Increased max-width to accommodate more content */
+            width: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .form-control, .form-control-file {
+            border-radius: 8px;
+            border: 2px solid #dfe6e9;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #0984e3;
+            box-shadow: 0 0 8px rgba(9, 132, 227, 0.2);
+        }
+
+        .btn-primary {
+            background: #0984e3;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #0652dd;
+        }
+
+        .btn-secondary {
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        #response {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dfe6e9;
+            color: #2d3436;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-height: 500px; /* Increased max-height for more content */
+            overflow-y: auto;
+        }
+
+        #response h3 {
+            font-size: 1.5rem;
+            color: #0984e3;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #dfe6e9;
+            padding-bottom: 5px;
+        }
+
+        #response ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        #response li {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        #response li:hover {
+            transform: translateY(-2px);
+        }
+
+        #response img {
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        #response a {
+            color: #0984e3;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #response a:hover {
+            text-decoration: underline;
+        }
+
+        #loading {
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group:hover .form-control,
+        .form-group:hover .form-control-file {
+            border-color: #0984e3;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            #response {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Shopping Assistant</h1>
+        <form id="assistant-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="query">Search by text:</label>
+                <input type="text" class="form-control" id="query" name="query" placeholder="Enter search query (e.g., 'blue sneakers')">
+            </div>
+            <div class="form-group">
+                <label for="image">Or upload an image:</label>
+                <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary btn-block mr-2">Submit</button>
+                <button type="button" class="btn btn-secondary btn-block ml-2" id="clear-btn">Clear</button>
+            </div>
+        </form>
+        <div id="loading" class="text-center" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div id="response" class="mt-4"></div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript for AJAX form submission -->
+    <script>
+        $(document).ready(function() {
+            // Handle form submission with AJAX
+            $('#assistant-form').on('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Show loading spinner
+                $('#loading').show();
+                $('#response').hide();
+
+                // Create FormData object to handle text and file inputs
+                let formData = new FormData(this);
+
+                // Make AJAX request
+                $.ajax({
+                    url: '/assistant',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // Hide loading spinner
+                        $('#loading').hide();
+                        // Display response with animation
+                        $('#response').html(response).fadeIn(300);
+                        // Scroll to response if content exceeds container height
+                        if ($('#response')[0].scrollHeight > $('#response').height()) {
+                            $('#response').animate({ scrollTop: 0 }, 500);
+                        }
+                    },
+                    error: function() {
+                        $('#loading').hide();
+                        $('#response').html('<div class="alert alert-danger">An error occurred. Please try again.</div>').fadeIn(300);
+                    }
+                });
+            });
+
+            // Clear form and response
+            $('#clear-btn').on('click', function() {
+                $('#assistant-form')[0].reset();
+                $('#response').fadeOut(300, function() {
+                    $(this).html('').show();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
