@@ -2,7 +2,6 @@
 
 An intelligent e-commerce assistant that helps users find products through text queries and image uploads, powered by advanced AI models.
 
-![AI Shopping Assistant](https://via.placeholder.com/800x400?text=AI+Shopping+Assistant)
 
 ## 🚀 Features
 
@@ -113,14 +112,3 @@ ai_shopping_assistant/
 - Mobile app version
 - Product comparison feature
 
-## 📄 License
-
-[MIT License](LICENSE)
-
-## 👥 Contributors
-
-- [Your Name/Organization]
-
----
-
-*This project was created as a demonstration of AI-powered e-commerce assistance capabilities.*
